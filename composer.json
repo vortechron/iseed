@@ -55,7 +55,10 @@
 		"laravel": {
 			"providers": [
 				"Orangehill\\Iseed\\IseedServiceProvider"
-			]
+			],
+			"aliases": {
+				"Iseed": "Orangehill\\Iseed\\Facades\\Iseed"
+			}
 		}
 	},
 	"config": {

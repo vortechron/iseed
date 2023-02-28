@@ -46,15 +46,15 @@ class IseedCommand extends Command
         }
 
         $tables = explode(',', $this->argument('tables'));
-        $max = intval($this->option('max'));
-        $chunkSize = intval($this->option('chunksize'));
+        $max = intval($this->option('max') ?? 999999999999);
+        $chunkSize = intval($this->option('chunksize') ?? 10000);
         $exclude = explode(',', $this->option('exclude'));
         $prerunEvents = explode(',', $this->option('prerun'));
         $postrunEvents = explode(',', $this->option('postrun'));
         $dumpAuto = intval($this->option('dumpauto'));
-        $indexed = ! $this->option('noindex');
+        $indexed = !$this->option('noindex');
         $orderBy = $this->option('orderby');
-        $direction = $this->option('direction');
+        $direction = $this->option('direction') ?? 'asc';
         $prefix = $this->option('classnameprefix');
         $suffix = $this->option('classnamesuffix');
 
@@ -83,7 +83,7 @@ class IseedCommand extends Command
             [$fileName, $className] = $this->generateFileName($table, $prefix, $suffix);
 
             // if file does not exist or force option is turned on generate seeder
-            if (! File::exists($fileName) || $this->option('force')) {
+            if (!File::exists($fileName) || $this->option('force')) {
                 $this->printResult(
                     app('iseed')->generateSeed(
                         $table,
@@ -106,7 +106,7 @@ class IseedCommand extends Command
                 continue;
             }
 
-            if ($this->confirm('File '.$className.' already exist. Do you wish to override it? [yes|no]')) {
+            if ($this->confirm('File ' . $className . ' already exist. Do you wish to override it? [yes|no]')) {
                 // if user said yes overwrite old seeder
                 $this->printResult(
                     app('iseed')->generateSeed(
@@ -186,14 +186,14 @@ class IseedCommand extends Command
      */
     protected function generateFileName(string $table, ?string $prefix = null, ?string $suffix = null): array|string
     {
-        if (! Schema::connection($this->option('database') ?: config('database.default'))->hasTable($table)) {
+        if (!Schema::connection($this->option('database') ?: config('database.default'))->hasTable($table)) {
             throw new TableNotFoundException("Table $table was not found.");
         }
 
         // Generate class name and file name
         $className = app('iseed')->generateClassName($table, $prefix, $suffix);
-        $seedPath = base_path().config('iseed::config.path');
+        $seedPath = base_path() . config('iseed::config.path');
 
-        return [$seedPath.'/'.$className.'.php', $className.'.php'];
+        return [$seedPath . '/' . $className . '.php', $className . '.php'];
     }
 }
